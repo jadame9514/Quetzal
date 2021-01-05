@@ -57,6 +57,13 @@ namespace QP.Mods
             return true;
         }
 
+        /// <summary>
+        /// Function to register to the BaseSocketClient ReactionAdded event
+        /// </summary>
+        /// <param name="cachedMessage">The message the reaction is on</param>
+        /// <param name="originChannel">The channel the reaction is in</param>
+        /// <param name="reaction">The reaction</param>
+        /// <returns></returns>
         private async Task ReactionAdded(Cacheable<IUserMessage, ulong> cachedMessage, ISocketMessageChannel originChannel, SocketReaction reaction)
         {
             /* TODO: Turn into helper method and reuse for ReactionRemoved *****************************************************/
@@ -88,6 +95,13 @@ namespace QP.Mods
             /******************************************************************************************************************/
         }
 
+        /// <summary>
+        /// Function to register to the BaseSocketClient ReactionRemoved event
+        /// </summary>
+        /// <param name="cachedMessage">The message the reaction is on</param>
+        /// <param name="originChannel">The channel the reaction is in</param>
+        /// <param name="reaction">The reaction</param>
+        /// <returns></returns>
         private async Task ReactionRemoved(Cacheable<IUserMessage, ulong> cachedMessage, ISocketMessageChannel originChannel, SocketReaction reaction)
         {
             // TODO: Remove the role

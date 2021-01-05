@@ -28,17 +28,19 @@ namespace QP
 
             var config = new DiscordSocketConfig
             {
-                AlwaysDownloadUsers = true,
-                MessageCacheSize = 100,
+                AlwaysDownloadUsers = true, // Should grab users, doesn't seem to be...
+                MessageCacheSize = 100, // Let's start with a cache of this size
             };
 
             _client = new DiscordSocketClient(config);
 
-            _client.Log += Log;
-            _client.Ready += Init;
+            _client.Log += Log; // Register Log Event
+            _client.Ready += Init; // Register Ready Event
 
+            // Load the roles from file
             roleConfig = JsonSerializer.Deserialize<RoleConfig>(File.ReadAllText(@"config\roles.json"));
 
+            // Login and star the bot
             await _client.LoginAsync(TokenType.Bot, token);
             await _client.StartAsync();
 
@@ -46,10 +48,16 @@ namespace QP
             await Task.Delay(-1);
         }
 
+        /// <summary>
+        /// Runs after guild data has become available
+        /// </summary>
+        /// <returns>Task</returns>
         private Task Init()
         {
+            // Initialize the RoleMod and load in roles
             roleMod = new RoleMod(roleConfig, _client);
             roleMod.LoadRoles();
+
             return Task.CompletedTask;
         }
 
