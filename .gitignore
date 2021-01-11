@@ -2,3 +2,4 @@ bin/*
 obj/*
 .vscode/*
 *.code-workspace
+config/*

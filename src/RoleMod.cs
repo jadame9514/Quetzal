@@ -16,10 +16,12 @@ namespace QP.Mods
         private readonly DiscordSocketClient client;
         private readonly RoleConfig roleConfig;
         private Dictionary<string, Dictionary<string, IRole>> roleMessagesMaps;
+        private IRole roleToUnset;
 
         public RoleMod(RoleConfig roleConfig, DiscordSocketClient client)
         {
             client.ReactionAdded += ReactionAdded;
+            client.ReactionRemoved += ReactionRemoved;
             this.client = client;
             this.roleConfig = roleConfig;
         }
@@ -103,13 +105,34 @@ namespace QP.Mods
         /// <param name="reaction">The reaction</param>
         /// <returns></returns>
         private async Task ReactionRemoved(Cacheable<IUserMessage, ulong> cachedMessage, ISocketMessageChannel originChannel, SocketReaction reaction)
-        {
-            // TODO: Remove the role
-        }
+        {  
+            Dictionary<string, IRole> rolesMap;
+            
+            // Only care about reactions on the role message.
+            if (!roleMessagesMaps.TryGetValue(cachedMessage.Id.ToString(), out rolesMap) /*&& !reaction.User.Value.IsBot*/) return;
 
-        private async Task ResetColors()
-        {
-            // TODO: Method to clear color roles from everyone
+            IRole roleToRemove;
+            if (reaction.Emote as Emote == null)
+            {
+                // Handle standard emoji
+                 rolesMap.TryGetValue(reaction.Emote.Name, out roleToRemove);
+            }
+            else
+            {
+                // Handle custom emoji
+                rolesMap.TryGetValue((reaction.Emote as Emote).Id.ToString(), out roleToRemove);
+            }
+
+            if (roleToRemove != null)
+            {
+                var user = await client.Rest.GetGuildUserAsync(roleConfig.ServerId, reaction.UserId); // This is still bullshit
+                await user.RemoveRoleAsync(roleToRemove); // Remove the role to the user
+            }
+            else 
+            {
+                // Test RoleRemoval    
+            }
         }
     }
 }
+
